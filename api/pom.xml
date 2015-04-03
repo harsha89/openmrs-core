@@ -128,7 +128,7 @@
         <artifactId>javassist</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.openmrs.hibernate</groupId>
+         <groupId>org.hibernate</groupId>
          <artifactId>hibernate-core</artifactId>
       </dependency>
       <dependency>
@@ -145,7 +145,11 @@
       </dependency>
       <dependency>
          <groupId>org.apache.lucene</groupId>
-         <artifactId>lucene-queries</artifactId>
+         <artifactId>lucene-analyzers-phonetic</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.lucene</groupId>
+         <artifactId>lucene-queryparser</artifactId>
       </dependency>
       <dependency>
          <groupId>dom4j</groupId>

@@ -63,6 +63,7 @@ public class MemoryLeakUtil {
 	
 	public static void shutdownKeepAliveTimer() {
 		try {
+			//TODO Hibernate 4 Upgrade
 			final Field kac = HttpClient.class.getDeclaredField("kac");
 			
 			kac.setAccessible(true);
@@ -87,6 +88,7 @@ public class MemoryLeakUtil {
 	 */
 	public static void clearHibernateSessionFactories() {
 		try {
+			//TODO During upgrading hibernate 4 check whether this is needed or not
 			Field field = SessionFactoryObjectFactory.class.getDeclaredField("INSTANCES");
 			field.setAccessible(true);
 			Map instances = (Map) field.get(null);

@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -23,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
@@ -81,33 +83,23 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String, java.lang.Integer, java.lang.Integer)
 	 */
 	public void mrnGeneratorLog(String site, Integer start, Integer count) {
-		PreparedStatement ps = null;
+		Query ps;
 		try {
 			String sql = "insert into `";
 			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
-			sql += "(date_generated, generated_by, site, mrn_first, mrn_count) values (?, ?, ?, ?, ?)";
+			sql += "(date_generated, generated_by, site, mrn_first, mrn_count) values (:date_generated, :generated_by, :site, "
+			        + ":mrn_first, :mrn_count)";
+			ps = sessionFactory.getCurrentSession().createSQLQuery(sql);
 			
-			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
-			
-			ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
-			ps.setInt(2, Context.getAuthenticatedUser().getUserId());
-			ps.setString(3, site);
-			ps.setInt(4, start);
-			ps.setInt(5, count);
-			ps.execute();
+			ps.setTimestamp("date_generated", new Timestamp(System.currentTimeMillis()));
+			ps.setInteger("generated_by", Context.getAuthenticatedUser().getUserId());
+			ps.setString("site", site);
+			ps.setInteger("mrn_first", start);
+			ps.setInteger("mrn_count", count);
+			ps.executeUpdate();
 		}
 		catch (Exception e) {
 			throw new DAOException("Error generating mrn log", e);
-		}
-		finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
 		}
 	}
 	
@@ -117,7 +109,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	public Collection getMRNGeneratorLog() {
 		Collection<Map<String, Object>> logs = new Vector<Map<String, Object>>();
 		
-		PreparedStatement ps = null;
+		Query ps = null;
 		try {
 			Map<String, Object> row;
 			
@@ -125,33 +117,23 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
 			sql += "order by mrn_log_id desc";
 			
-			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			ps = sessionFactory.getCurrentSession().createSQLQuery(sql);
 			
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
+			Iterator results = ps.list().iterator();
+			while (results.hasNext()) {
 				row = new HashMap<String, Object>();
-				row.put("date", rs.getTimestamp("date_generated"));
-				row.put("user", rs.getString("generated_by"));
-				row.put("site", rs.getString("site"));
-				row.put("first", rs.getInt("mrn_first"));
-				row.put("count", rs.getInt("mrn_count"));
+				Object[] values = (Object[]) results.next();
+				row.put("date", values[0]);
+				row.put("user", values[1]);
+				row.put("site", values[2]);
+				row.put("first", values[3]);
+				row.put("count", values[4]);
 				logs.add(row);
 			}
 		}
 		catch (Exception e) {
 			throw new DAOException("Error getting mrn log", e);
 		}
-		finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
-		}
-		
 		return logs;
 	}
 	
@@ -250,6 +232,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		if (HibernateUtil.isHSQLDialect(sessionFactory)) {
 			sql = sql.replace("`", "");
 		}
+		//TODO find replacement
 		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), sql, selectOnly);
 	}
 	

@@ -408,6 +408,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void updateSearchIndexForType(Class<?> type) {
 		//From http://docs.jboss.org/hibernate/search/3.3/reference/en-US/html/manual-index-changes.html#search-batchindex-flushtoindexes
+		//TODO Hibernate 4 Upgrade
 		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
 		session.purgeAll(type);
 		

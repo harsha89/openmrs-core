@@ -26,7 +26,7 @@ import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
-import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
 import org.openmrs.attribute.AttributeType;
@@ -86,6 +86,7 @@ public class HibernateUtil {
 	 * @see HibernateUtil#escapeSqlWildcards(String, Connection)
 	 */
 	public static String escapeSqlWildcards(String oldString, SessionFactory sessionFactory) {
+		//TODO new hibernate version not gives underline connection
 		return escapeSqlWildcards(oldString, sessionFactory.getCurrentSession().connection());
 	}
 	

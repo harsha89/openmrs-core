@@ -19,6 +19,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
 import org.openmrs.api.context.Context;
@@ -99,6 +100,19 @@ public class HibernateEnumType implements UserType, ParameterizedType {
 	
 	public int hashCode(Object x) throws HibernateException {
 		return x.hashCode();
+	}
+	
+	@Override
+	public Object nullSafeGet(ResultSet resultSet, String[] strings, SessionImplementor sessionImplementor, Object o)
+	        throws HibernateException, SQLException {
+		//Hibernate 4
+		return null;
+	}
+	
+	@Override
+	public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SessionImplementor sessionImplementor)
+	        throws HibernateException, SQLException {
+		//Hibernate 4
 	}
 	
 	public boolean equals(Object x, Object y) throws HibernateException {

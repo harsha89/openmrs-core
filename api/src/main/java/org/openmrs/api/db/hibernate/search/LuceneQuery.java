@@ -197,6 +197,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 * @return the query builder
 	 */
 	protected QueryBuilder newQueryBuilder() {
+		//TODO Hibernate 4
 		return getFullTextSession().getSearchFactory().buildQueryBuilder().forEntity(getType()).get();
 	}
 	
@@ -206,6 +207,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 * @return the query parser
 	 */
 	protected QueryParser newQueryParser() {
+		//TODO Hibernate 4
 		Analyzer analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
 		QueryParser queryParser = new QueryParser(Version.LUCENE_31, null, analyzer);
 		queryParser.setDefaultOperator(Operator.AND);
@@ -324,6 +326,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 			throw new IllegalStateException("Invalid query", e);
 		}
 		
+		//TODO Hibernate 4
 		fullTextQuery = getFullTextSession().createFullTextQuery(query, getType());
 		adjustFullTextQuery(fullTextQuery);
 	}
